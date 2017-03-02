@@ -17,6 +17,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.v4.util.LongSparseArray;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -35,6 +36,7 @@ import android.widget.ZoomButtonsController;
 
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.R;
+import com.mapbox.mapboxsdk.annotations.Annotation;
 import com.mapbox.mapboxsdk.annotations.MarkerViewManager;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.constants.MapboxConstants;
@@ -139,8 +141,16 @@ public class MapView extends FrameLayout {
     UiSettings uiSettings = new UiSettings(proj, focalPoint, compassView, attrView, view.findViewById(R.id.logoView));
     TrackingSettings trackingSettings = new TrackingSettings(myLocationView, uiSettings, focalPoint, zoomInvalidator);
     MyLocationViewSettings myLocationViewSettings = new MyLocationViewSettings(myLocationView, proj, focalPoint);
+    LongSparseArray<Annotation> annotationsArray = new LongSparseArray<>();
     MarkerViewManager markerViewManager = new MarkerViewManager((ViewGroup) findViewById(R.id.markerViewContainer));
-    AnnotationManager annotations = new AnnotationManager(nativeMapView, this, markerViewManager);
+    IconManager iconManager = new IconManager(nativeMapView);
+    Annotations annotationsManager = new AnnotationsFunctions(nativeMapView, annotationsArray);
+    Markers markersManager = new MarkersFunctions(nativeMapView, this, annotationsArray, iconManager,
+      markerViewManager);
+    Polygons polygonsManager = new PolygonsFunctions(nativeMapView, annotationsArray);
+    Polylines polylinesManager = new PolylinesFunctions(nativeMapView, annotationsArray);
+    AnnotationManager annotations = new AnnotationManager(nativeMapView, this, annotationsArray, markerViewManager,
+      iconManager, annotationsManager, markersManager, polygonsManager, polylinesManager);
     Transform transform = new Transform(nativeMapView, annotations.getMarkerViewManager(), trackingSettings);
     mapboxMap = new MapboxMap(nativeMapView, transform, uiSettings, trackingSettings, myLocationViewSettings, proj,
       registerTouchListener, annotations);

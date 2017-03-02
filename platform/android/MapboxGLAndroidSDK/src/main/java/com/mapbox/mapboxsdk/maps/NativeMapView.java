@@ -61,12 +61,8 @@ final class NativeMapView {
   // Listener invoked to return a bitmap of the map
   private MapboxMap.SnapshotReadyCallback snapshotReadyCallback;
 
-  //
-  // Static methods
-  //
-
   static {
-    System.loadLibrary("mapbox-gl");
+    LibraryLoader.load();
   }
 
   //
