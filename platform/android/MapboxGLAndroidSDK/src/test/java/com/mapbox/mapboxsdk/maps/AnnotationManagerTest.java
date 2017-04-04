@@ -9,7 +9,6 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerViewManager;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -20,12 +19,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-//TODO Fix failing tests
-// Proposed solution: https://github.com/powermock/powermock/wiki/SuppressUnwantedBehavior#suppress-static-initializer
-// At the moment PowerMock isn't fully compatible with Mockito2 - https://github.com/powermock/powermock/issues/726
 public class AnnotationManagerTest {
 
-  @Ignore
   @Test
   public void checksAddAMarker() throws Exception {
     NativeMapView aNativeMapView = mock(NativeMapView.class);
@@ -52,7 +47,6 @@ public class AnnotationManagerTest {
     assertEquals(aMarker, annotationManager.getAnnotation(aId));
   }
 
-  @Ignore
   @Test
   public void checksAddMarkers() throws Exception {
     NativeMapView aNativeMapView = mock(NativeMapView.class);
