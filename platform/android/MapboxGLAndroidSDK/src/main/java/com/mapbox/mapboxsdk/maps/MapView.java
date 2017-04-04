@@ -144,19 +144,19 @@ public class MapView extends FrameLayout {
     LongSparseArray<Annotation> annotationsArray = new LongSparseArray<>();
     MarkerViewManager markerViewManager = new MarkerViewManager((ViewGroup) findViewById(R.id.markerViewContainer));
     IconManager iconManager = new IconManager(nativeMapView);
-    Annotations annotationsManager = new AnnotationsFunctions(nativeMapView, annotationsArray);
-    Markers markersManager = new MarkersFunctions(nativeMapView, this, annotationsArray, iconManager,
-      markerViewManager);
-    Polygons polygonsManager = new PolygonsFunctions(nativeMapView, annotationsArray);
-    Polylines polylinesManager = new PolylinesFunctions(nativeMapView, annotationsArray);
-    AnnotationManager annotations = new AnnotationManager(nativeMapView, this, annotationsArray, markerViewManager,
-      iconManager, annotationsManager, markersManager, polygonsManager, polylinesManager);
-    Transform transform = new Transform(nativeMapView, annotations.getMarkerViewManager(), trackingSettings);
+    Annotable annotations = new Annotations(nativeMapView, annotationsArray);
+    Markable markers = new Markers(nativeMapView, this, annotationsArray, iconManager, markerViewManager);
+    Polygonable polygons = new Polygons(nativeMapView, annotationsArray);
+    Polylinable polylines = new Polylines(nativeMapView, annotationsArray);
+    AnnotationManager annotationManager = new AnnotationManager(nativeMapView, this, annotationsArray,
+      markerViewManager, iconManager, annotations, markers, polygons, polylines);
+    Transform transform = new Transform(nativeMapView, annotationManager.getMarkerViewManager(), trackingSettings);
     mapboxMap = new MapboxMap(nativeMapView, transform, uiSettings, trackingSettings, myLocationViewSettings, proj,
-      registerTouchListener, annotations);
+      registerTouchListener, annotationManager);
 
     // user input
-    mapGestureDetector = new MapGestureDetector(context, transform, proj, uiSettings, trackingSettings, annotations);
+    mapGestureDetector = new MapGestureDetector(context, transform, proj, uiSettings, trackingSettings,
+      annotationManager);
     mapKeyListener = new MapKeyListener(transform, trackingSettings, uiSettings);
 
     MapZoomControllerListener zoomListener = new MapZoomControllerListener(mapGestureDetector, uiSettings, transform);

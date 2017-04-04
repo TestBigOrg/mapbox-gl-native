@@ -33,14 +33,12 @@ public class AnnotationManagerTest {
     LongSparseArray<Annotation> annotationsArray = new LongSparseArray<>();
     MarkerViewManager aMarkerViewManager = mock(MarkerViewManager.class);
     IconManager aIconManager = mock(IconManager.class);
-    Annotations annotations = new AnnotationsFunctions(aNativeMapView, annotationsArray);
-    Markers aMarkersManager = new MarkersFunctions(aNativeMapView, aMapView, annotationsArray, aIconManager,
-      aMarkerViewManager);
-    Polygons aPolygonsManager = new PolygonsFunctions(aNativeMapView, annotationsArray);
-    Polylines aPolylinesManager = new PolylinesFunctions(aNativeMapView, annotationsArray);
+    Annotable annotations = new Annotations(aNativeMapView, annotationsArray);
+    Markable markers = new Markers(aNativeMapView, aMapView, annotationsArray, aIconManager, aMarkerViewManager);
+    Polygonable polygons = new Polygons(aNativeMapView, annotationsArray);
+    Polylinable polylines = new Polylines(aNativeMapView, annotationsArray);
     AnnotationManager annotationManager = new AnnotationManager(aNativeMapView, aMapView, annotationsArray,
-      aMarkerViewManager,
-      aIconManager, annotations, aMarkersManager, aPolygonsManager, aPolylinesManager);
+      aMarkerViewManager, aIconManager, annotations, markers, polygons, polylines);
     Marker aMarker = mock(Marker.class);
     long aId = 5L;
     when(aNativeMapView.addMarker(aMarker)).thenReturn(aId);
@@ -62,14 +60,12 @@ public class AnnotationManagerTest {
     LongSparseArray<Annotation> annotationsArray = new LongSparseArray<>();
     MarkerViewManager aMarkerViewManager = mock(MarkerViewManager.class);
     IconManager aIconManager = mock(IconManager.class);
-    Annotations annotations = new AnnotationsFunctions(aNativeMapView, annotationsArray);
-    Markers aMarkersManager = new MarkersFunctions(aNativeMapView, aMapView, annotationsArray, aIconManager,
-      aMarkerViewManager);
-    Polygons aPolygonsManager = new PolygonsFunctions(aNativeMapView, annotationsArray);
-    Polylines aPolylinesManager = new PolylinesFunctions(aNativeMapView, annotationsArray);
+    Annotable annotations = new Annotations(aNativeMapView, annotationsArray);
+    Markable markers = new Markers(aNativeMapView, aMapView, annotationsArray, aIconManager, aMarkerViewManager);
+    Polygonable polygons = new Polygons(aNativeMapView, annotationsArray);
+    Polylinable polylines = new Polylines(aNativeMapView, annotationsArray);
     AnnotationManager annotationManager = new AnnotationManager(aNativeMapView, aMapView, annotationsArray,
-      aMarkerViewManager,
-      aIconManager, annotations, aMarkersManager, aPolygonsManager, aPolylinesManager);
+      aMarkerViewManager, aIconManager, annotations, markers, polygons, polylines);
     long firstId = 1L;
     long secondId = 2L;
     List<BaseMarkerOptions> markerList = new ArrayList<>();

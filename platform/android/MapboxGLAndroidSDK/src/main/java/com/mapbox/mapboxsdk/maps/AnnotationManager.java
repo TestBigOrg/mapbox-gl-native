@@ -39,28 +39,28 @@ class AnnotationManager {
   private final IconManager iconManager;
   private final InfoWindowManager infoWindowManager = new InfoWindowManager();
   private final MarkerViewManager markerViewManager;
-  private final LongSparseArray<Annotation> annotations;
+  private final LongSparseArray<Annotation> annotationsArray;
   private final List<Marker> selectedMarkers = new ArrayList<>();
 
   private MapboxMap mapboxMap;
   private MapboxMap.OnMarkerClickListener onMarkerClickListener;
-  private Annotations annotationsManager;
-  private Markers markersManager;
-  private Polygons polygonsManager;
-  private Polylines polylinesManager;
+  private Annotable annotations;
+  private Markable markers;
+  private Polygonable polygons;
+  private Polylinable polylines;
 
   AnnotationManager(NativeMapView view, MapView mapView, LongSparseArray<Annotation> annotationsArray,
-                    MarkerViewManager markerViewManager, IconManager iconManager, Annotations annotationsManager,
-                    Markers markersManager, Polygons polygonsManager, Polylines polylinesManager) {
+                    MarkerViewManager markerViewManager, IconManager iconManager, Annotable annotations,
+                    Markable markers, Polygonable polygons, Polylinable polylines) {
     this.nativeMapView = view;
     this.mapView = mapView;
-    this.annotations = annotationsArray;
+    this.annotationsArray = annotationsArray;
     this.markerViewManager = markerViewManager;
     this.iconManager = iconManager;
-    this.annotationsManager = annotationsManager;
-    this.markersManager = markersManager;
-    this.polygonsManager = polygonsManager;
-    this.polylinesManager = polylinesManager;
+    this.annotations = annotations;
+    this.markers = markers;
+    this.polygons = polygons;
+    this.polylines = polylines;
     if (view != null) {
       // null checking needed for unit tests
       nativeMapView.addOnMapChangedListener(markerViewManager);
@@ -85,15 +85,15 @@ class AnnotationManager {
   //
 
   Annotation getAnnotation(long id) {
-    return annotationsManager.obtainBy(id);
+    return annotations.obtainBy(id);
   }
 
   List<Annotation> getAnnotations() {
-    return annotationsManager.obtainAll();
+    return annotations.obtainAll();
   }
 
   void removeAnnotation(long id) {
-    annotationsManager.removeBy(id);
+    annotations.removeBy(id);
   }
 
   void removeAnnotation(@NonNull Annotation annotation) {
@@ -104,7 +104,7 @@ class AnnotationManager {
         markerViewManager.removeMarkerView((MarkerView) marker);
       }
     }
-    annotationsManager.removeBy(annotation);
+    annotations.removeBy(annotation);
   }
 
   void removeAnnotations(@NonNull List<? extends Annotation> annotationList) {
@@ -117,16 +117,16 @@ class AnnotationManager {
         }
       }
     }
-    annotationsManager.removeBy(annotationList);
+    annotations.removeBy(annotationList);
   }
 
   void removeAnnotations() {
     Annotation annotation;
-    int count = annotations.size();
+    int count = annotationsArray.size();
     long[] ids = new long[count];
     for (int i = 0; i < count; i++) {
-      ids[i] = annotations.keyAt(i);
-      annotation = annotations.get(ids[i]);
+      ids[i] = annotationsArray.keyAt(i);
+      annotation = annotationsArray.get(ids[i]);
       if (annotation instanceof Marker) {
         Marker marker = (Marker) annotation;
         marker.hideInfoWindow();
@@ -135,7 +135,7 @@ class AnnotationManager {
         }
       }
     }
-    annotationsManager.removeAll();
+    annotations.removeAll();
   }
 
   //
@@ -143,42 +143,42 @@ class AnnotationManager {
   //
 
   Marker addMarker(@NonNull BaseMarkerOptions markerOptions, @NonNull MapboxMap mapboxMap) {
-    return markersManager.addBy(markerOptions, mapboxMap);
+    return markers.addBy(markerOptions, mapboxMap);
   }
 
   List<Marker> addMarkers(@NonNull List<? extends BaseMarkerOptions> markerOptionsList, @NonNull MapboxMap mapboxMap) {
-    return markersManager.addBy(markerOptionsList, mapboxMap);
+    return markers.addBy(markerOptionsList, mapboxMap);
   }
 
   void updateMarker(@NonNull Marker updatedMarker, @NonNull MapboxMap mapboxMap) {
-    markersManager.update(updatedMarker, mapboxMap);
+    markers.update(updatedMarker, mapboxMap);
   }
 
   List<Marker> getMarkers() {
-    return markersManager.obtainAll();
+    return markers.obtainAll();
   }
 
   @NonNull
   List<Marker> getMarkersInRect(@NonNull RectF rectangle) {
-    return markersManager.obtainAllIn(rectangle);
+    return markers.obtainAllIn(rectangle);
   }
 
   MarkerView addMarker(@NonNull BaseMarkerViewOptions markerOptions, @NonNull MapboxMap mapboxMap,
                        @Nullable MarkerViewManager.OnMarkerViewAddedListener onMarkerViewAddedListener) {
-    return markersManager.addViewBy(markerOptions, mapboxMap, onMarkerViewAddedListener);
+    return markers.addViewBy(markerOptions, mapboxMap, onMarkerViewAddedListener);
   }
 
   List<MarkerView> addMarkerViews(@NonNull List<? extends BaseMarkerViewOptions> markerViewOptions,
                                   @NonNull MapboxMap mapboxMap) {
-    return markersManager.addViewsBy(markerViewOptions, mapboxMap);
+    return markers.addViewsBy(markerViewOptions, mapboxMap);
   }
 
   List<MarkerView> getMarkerViewsInRect(@NonNull RectF rectangle) {
-    return markersManager.obtainViewsIn(rectangle);
+    return markers.obtainViewsIn(rectangle);
   }
 
   void reloadMarkers() {
-    markersManager.reload();
+    markers.reload();
   }
 
   //
@@ -186,19 +186,19 @@ class AnnotationManager {
   //
 
   Polygon addPolygon(@NonNull PolygonOptions polygonOptions, @NonNull MapboxMap mapboxMap) {
-    return polygonsManager.addBy(polygonOptions, mapboxMap);
+    return polygons.addBy(polygonOptions, mapboxMap);
   }
 
   List<Polygon> addPolygons(@NonNull List<PolygonOptions> polygonOptionsList, @NonNull MapboxMap mapboxMap) {
-    return polygonsManager.addBy(polygonOptionsList, mapboxMap);
+    return polygons.addBy(polygonOptionsList, mapboxMap);
   }
 
   void updatePolygon(Polygon polygon) {
-    polygonsManager.update(polygon);
+    polygons.update(polygon);
   }
 
   List<Polygon> getPolygons() {
-    return polygonsManager.obtainAll();
+    return polygons.obtainAll();
   }
 
   //
@@ -206,19 +206,19 @@ class AnnotationManager {
   //
 
   Polyline addPolyline(@NonNull PolylineOptions polylineOptions, @NonNull MapboxMap mapboxMap) {
-    return polylinesManager.addBy(polylineOptions, mapboxMap);
+    return polylines.addBy(polylineOptions, mapboxMap);
   }
 
   List<Polyline> addPolylines(@NonNull List<PolylineOptions> polylineOptionsList, @NonNull MapboxMap mapboxMap) {
-    return polylinesManager.addBy(polylineOptionsList, mapboxMap);
+    return polylines.addBy(polylineOptionsList, mapboxMap);
   }
 
   void updatePolyline(Polyline polyline) {
-    polylinesManager.update(polyline);
+    polylines.update(polyline);
   }
 
   List<Polyline> getPolylines() {
-    return polylinesManager.obtainAll();
+    return polylines.obtainAll();
   }
 
   // TODO Refactor from here still in progress
@@ -298,9 +298,9 @@ class AnnotationManager {
   }
 
   void adjustTopOffsetPixels(MapboxMap mapboxMap) {
-    int count = annotations.size();
+    int count = annotationsArray.size();
     for (int i = 0; i < count; i++) {
-      Annotation annotation = annotations.get(i);
+      Annotation annotation = annotationsArray.get(i);
       if (annotation instanceof Marker) {
         Marker marker = (Marker) annotation;
         marker.setTopOffsetPixels(
