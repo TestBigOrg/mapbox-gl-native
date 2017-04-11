@@ -14,9 +14,16 @@
     std::unique_ptr<mbgl::style::Layer> _pendingLayer;
 }
 
-- (instancetype)initWithRawLayer:(mbgl::style::Layer *)rawLayer {
+- (instancetype)initWithIdentifier:(NSString *)identifier {
     if (self = [super init]) {
-        _identifier = @(rawLayer->getID().c_str());
+        _identifier = identifier;
+    }
+    return self;
+}
+
+- (instancetype)initWithRawLayer:(mbgl::style::Layer *)rawLayer {
+    NSString *identifier = @(rawLayer->getID().c_str());
+    if (self = [self initWithIdentifier:identifier]) {
         _rawLayer = rawLayer;
         _rawLayer->peer = LayerWrapper { self };
     }

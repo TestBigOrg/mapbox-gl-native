@@ -27,7 +27,19 @@ MGL_EXPORT
 
 #pragma mark Initializing a Style Layer
 
-- (instancetype)init __attribute__((unavailable("Use -init methods of concrete subclasses instead.")));
+- (instancetype)init __attribute__((unavailable("Use -initWithIdentifier: instead.")));
+
+/**
+ Returns a layer initialized with an identifier.
+
+ After initializing and configuring the layer, add it to a map view’s style
+ using the `-[MGLStyle addLayer:]` method.
+
+ @param identifier A string that uniquely identifies the layer in the style to
+    which it is added.
+ @return An initialized layer.
+ */
+- (instancetype)initWithIdentifier:(NSString *)identifier;
 
 #pragma mark Identifying a Style Layer
 
